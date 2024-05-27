@@ -10,9 +10,11 @@ class SpotifyCanvasIE(SpotifyBaseIE):
 
     def _real_extract(self, url):
         track_id = self._match_id(url)
+
+        # Get Canvas info
         canvas_request = EntityCanvazRequest()
         canvas_request_entities = canvas_request.entities.add()
-        canvas_request_entities.entity_uri = 'spotify:track:' + track_id
+        canvas_request_entities.entity_uri = f'spotify:track:{track_id}'
         req = Request(
             'https://gew1-spclient.spotify.com/canvaz-cache/v0/canvases',
             headers={
@@ -22,17 +24,11 @@ class SpotifyCanvasIE(SpotifyBaseIE):
             data=canvas_request.SerializeToString(),
         )
         urlh = self._request_webpage(req, track_id)
-        assert urlh
         content = urlh.read()
-        print(type(content))
-
         canvas_response = EntityCanvazResponse()
         canvas_response.ParseFromString(content)
-        print(canvas_response)
 
-        if(len(canvas_response.canvases) == 0):
-            self.raise_no_formats('No formats are available', expected=True, video_id=track_id)
-
+        # Get track info
         req = Request(
             f'https://api.spotify.com/v1/tracks/{track_id}',
             headers={
@@ -40,20 +36,20 @@ class SpotifyCanvasIE(SpotifyBaseIE):
             },
         )
         track_info = self._download_json(req, track_id)
-        #print(track_info)
 
+        # Parse data
         formats = tuple({'url': canvas.url} for canvas in canvas_response.canvases)
-        print(traverse_obj(track_info, ('album', 'artists', ..., 'name')))
-
+        if not formats:
+            self.raise_no_formats('No formats are available', expected=True, video_id=track_id)
         track = track_info.get('name')
         artists = traverse_obj(track_info, ('artists', ..., 'name'))
 
-        # For convenience
         title = None
         if artists and track:
+            # For convenience
             artist = ', '.join(artists)
             title = f'{artist} - {track} (Canvas)'
-            
+
         return {
             'id': track_id,
             'title': title,
@@ -65,4 +61,3 @@ class SpotifyCanvasIE(SpotifyBaseIE):
             'disc_number': track_info.get('disc_number'),
             'formats': formats,
         }
-
