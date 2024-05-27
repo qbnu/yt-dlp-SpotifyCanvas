@@ -28,6 +28,11 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         canvas_response = EntityCanvazResponse()
         canvas_response.ParseFromString(content)
 
+        # Fail early if there is no Canvas
+        formats = tuple({'url': canvas.url} for canvas in canvas_response.canvases)
+        if not formats:
+            self.raise_no_formats('No formats are available', expected=True, video_id=track_id)
+
         # Get track info
         req = Request(
             f'https://api.spotify.com/v1/tracks/{track_id}',
@@ -38,15 +43,11 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         track_info = self._download_json(req, track_id)
 
         # Parse data
-        formats = tuple({'url': canvas.url} for canvas in canvas_response.canvases)
-        if not formats:
-            self.raise_no_formats('No formats are available', expected=True, video_id=track_id)
         track = track_info.get('name')
         artists = traverse_obj(track_info, ('artists', ..., 'name'))
-
         title = None
         if artists and track:
-            # For convenience
+            # Set title for convenience
             artist = ', '.join(artists)
             title = f'{artist} - {track} (Canvas)'
 
