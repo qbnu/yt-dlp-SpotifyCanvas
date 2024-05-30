@@ -13,40 +13,34 @@ class SpotifyCanvasIE(SpotifyBaseIE):
 
         # Get Canvas info
         canvas_request = EntityCanvazRequest()
-        canvas_request_entities = canvas_request.entities.add()
-        canvas_request_entities.entity_uri = f'spotify:track:{track_id}'
-        req = Request(
-            'https://gew1-spclient.spotify.com/canvaz-cache/v0/canvases',
+        canvas_request.entities.add().entity_uri = f'spotify:track:{track_id}'
+        canvas_response_bytes = self._request_webpage(
+            'https://api-partner.spotify.com/canvaz-cache/v0/canvases', track_id,
             headers={
                 'Content-Type': 'application/x-protobuf',
                 'Authorization': f'Bearer {self._ACCESS_TOKEN}',
             },
             data=canvas_request.SerializeToString(),
-        )
-        resp = self._request_webpage(req, track_id).read()
+        ).read()
         canvas_response = EntityCanvazResponse()
-        canvas_response.ParseFromString(resp)
+        canvas_response.ParseFromString(canvas_response_bytes)
 
         # Fail early if there is no Canvas
-        formats = tuple({'url': canvas.url} for canvas in canvas_response.canvases)
+        formats = tuple({'url': canvas.url} for canvas in canvas_response.canvases if canvas.url)
         if not formats:
             self.raise_no_formats('No formats are available', expected=True, video_id=track_id)
 
         # Get track info
-        req = Request(
-            f'https://api.spotify.com/v1/tracks/{track_id}',
-            headers={
-                'Authorization': f'Bearer {self._ACCESS_TOKEN}',
-            },
+        track_info = self._download_json(
+            f'https://api.spotify.com/v1/tracks/{track_id}', track_id,
+            headers={'Authorization': f'Bearer {self._ACCESS_TOKEN}'},
         )
-        track_info = self._download_json(req, track_id)
 
         # Parse data
         track = track_info.get('name')
         artists = traverse_obj(track_info, ('artists', ..., 'name'))
         # Set title for convenience
         title = f'{", ".join(artists)} - {track} (Canvas)' if artists and track else None
-
         return {
             'id': track_id,
             'title': title,
