@@ -19,14 +19,13 @@ class SpotifyCanvasIE(SpotifyBaseIE):
             'https://gew1-spclient.spotify.com/canvaz-cache/v0/canvases',
             headers={
                 'Content-Type': 'application/x-protobuf',
-                'Authorization': f'Bearer {self._ACCESS_TOKEN}'
+                'Authorization': f'Bearer {self._ACCESS_TOKEN}',
             },
             data=canvas_request.SerializeToString(),
         )
-        urlh = self._request_webpage(req, track_id)
-        content = urlh.read()
+        resp = self._request_webpage(req, track_id).read()
         canvas_response = EntityCanvazResponse()
-        canvas_response.ParseFromString(content)
+        canvas_response.ParseFromString(resp)
 
         # Fail early if there is no Canvas
         formats = tuple({'url': canvas.url} for canvas in canvas_response.canvases)
@@ -37,7 +36,7 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         req = Request(
             f'https://api.spotify.com/v1/tracks/{track_id}',
             headers={
-                'Authorization': f'Bearer {self._ACCESS_TOKEN}'
+                'Authorization': f'Bearer {self._ACCESS_TOKEN}',
             },
         )
         track_info = self._download_json(req, track_id)
@@ -45,11 +44,8 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         # Parse data
         track = track_info.get('name')
         artists = traverse_obj(track_info, ('artists', ..., 'name'))
-        title = None
-        if artists and track:
-            # Set title for convenience
-            artist = ', '.join(artists)
-            title = f'{artist} - {track} (Canvas)'
+        # Set title for convenience
+        title = f'{", ".join(artists)} - {track} (Canvas)' if artists and track else None
 
         return {
             'id': track_id,
@@ -61,6 +57,6 @@ class SpotifyCanvasIE(SpotifyBaseIE):
             'album_artists': traverse_obj(track_info, ('album', 'artists', ..., 'name')),
             'album': traverse_obj(track_info, ('album', 'name')),
             'disc_number': track_info.get('disc_number'),
-            'release_date': unified_strdate(traverse_obj(track_info, ('album', 'release_date')),),
+            'release_date': unified_strdate(traverse_obj(track_info, ('album', 'release_date'))),
             'formats': formats,
         }
