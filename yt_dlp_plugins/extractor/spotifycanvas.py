@@ -2,7 +2,7 @@ from yt_dlp.extractor.spotify import SpotifyBaseIE
 from yt_dlp.networking import Request
 from yt_dlp.utils import traverse_obj, unified_strdate
 
-from yt_dlp_plugins.extractor.protos.canvas_pb2 import EntityCanvazRequest, EntityCanvazResponse
+from yt_dlp_plugins.extractor.proto.canvas_pb2 import EntityCanvazRequest, EntityCanvazResponse
 
 
 class SpotifyCanvasIE(SpotifyBaseIE):
