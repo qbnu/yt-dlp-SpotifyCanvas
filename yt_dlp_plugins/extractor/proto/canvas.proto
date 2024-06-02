@@ -14,6 +14,12 @@ message Artist {
     string avatar = 3;
 }
 
+message Thumbnail {
+    uint64 height = 1;
+    uint64 width = 2;
+    string url = 3;
+}
+
 message EntityCanvazResponse {
     repeated Canvaz canvases = 1;
     message Canvaz {
@@ -28,6 +34,7 @@ message EntityCanvazResponse {
         string etag = 9;
         string canvas_uri = 11;
         string storylines_id = 12;
+        repeated Thumbnail thumbnails = 13;
     }
     int64 ttl_in_seconds = 2;
 }

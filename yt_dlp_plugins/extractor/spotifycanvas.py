@@ -1,6 +1,6 @@
 from yt_dlp.extractor.spotify import SpotifyBaseIE
 from yt_dlp.networking import Request
-from yt_dlp.utils import traverse_obj, unified_strdate
+from yt_dlp.utils import float_or_none, traverse_obj, unified_strdate
 
 from yt_dlp_plugins.extractor.proto.canvas_pb2 import EntityCanvazRequest, EntityCanvazResponse
 
@@ -26,7 +26,17 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         canvas_response.ParseFromString(canvas_response_bytes)
 
         # Fail early if there is no Canvas
-        formats = tuple({'url': canvas.url} for canvas in canvas_response.canvases if canvas.url)
+        formats = []
+        thumbnails = []
+        for canvas in canvas_response.canvases:
+            if canvas.url:
+                formats.append({'url': canvas.url})
+            for thumbnail in canvas.thumbnails:
+                thumbnails.append({
+                    'width': thumbnail.width,
+                    'height': thumbnail.height,
+                    'url': thumbnail.url,
+                })
         if not formats:
             self.raise_no_formats('No formats are available', expected=True, video_id=track_id)
 
@@ -43,6 +53,7 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         title = f'{", ".join(artists)} - {track} (Canvas)' if artists and track else None
         return {
             'id': track_id,
+            'duration': float_or_none(track_info.get('duration_ms'), scale=1000),
             'title': title,
             'track': track,
             'track_number': track_info.get('track_number'),
@@ -52,5 +63,6 @@ class SpotifyCanvasIE(SpotifyBaseIE):
             'album': traverse_obj(track_info, ('album', 'name')),
             'disc_number': track_info.get('disc_number'),
             'release_date': unified_strdate(traverse_obj(track_info, ('album', 'release_date'))),
+            'thumbnails': thumbnails,
             'formats': formats,
         }
