@@ -31,4 +31,4 @@ Note: if you download a static Canvas (JPEG) with `--write-thumbnail` set then t
 [My Spotify Canvas](https://github.com/bartleyg/my-spotify-canvas)  
 [librespot-java](https://github.com/librespot-org/librespot-java)  
 [Spotify Canvas Downloader](https://github.com/Delitefully/spotify-canvas-downloader)  
-[Spicetify Canvas](https://github.com/itsmeow/Spicetify-Canvas)
+[Spicetify Canvas](https://github.com/itsmeow/Spicetify-Canvas)  

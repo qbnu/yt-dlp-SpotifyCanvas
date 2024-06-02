@@ -6,4 +6,10 @@ build-backend = "setuptools.build_meta"
 universal = true
 
 [project]
+name = "yt-dlp-SpotifyCanvas"
+description = "A yt-dlp extractor plugin for downloading Spotify Canvas videos"
+version = "2024.06.02"
+requires-python = ">=3.8"
+readme = "README.md"
+license = {file = "LICENSE"}
 dependencies = ["protobuf"]
