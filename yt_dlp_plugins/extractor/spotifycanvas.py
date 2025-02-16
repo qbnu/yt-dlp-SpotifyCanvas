@@ -8,6 +8,11 @@ class SpotifyCanvasIE(SpotifyBaseIE):
     _VALID_URL = r'https?://open\.spotify\.com/(?:embed/)?track/(?P<id>\w+)'
 
     def _real_extract(self, url):
+        cookies = self._get_cookies('https://open.spotify.com')
+        if not traverse_obj(cookies, 'sp_dc'):
+            self.raise_login_required(
+                'sp_dc cookie is required to download Canvases!', metadata_available=True)
+
         track_id = self._match_id(url)
 
         # Get Canvas info

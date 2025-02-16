@@ -15,9 +15,16 @@ See [installing yt-dlp plugins](https://github.com/yt-dlp/yt-dlp#installing-plug
 
 ## Usage
 
+**IMPORTANT**: Downloading will NOT work anymore unless you specify your `sp_dc` cookie. See [*How do I pass cookies to yt-dlp?*](https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp).  
+You can use a cookie file like this:
+```
+# For yt-dlp-SpotifyCanvas
+.spotify.com	TRUE	/	TRUE	2147483647	sp_dc	<your cookie value>
+```
+
 Download the Canvas for a song:
 ```
-yt-dlp https://open.spotify.com/track/0DiWol3AO6WpXZgp0goxAV
+yt-dlp --cookies spotify-cookies.txt https://open.spotify.com/track/0DiWol3AO6WpXZgp0goxAV
 ```
 Write the song info in [yt-dlp format](https://github.com/yt-dlp/yt-dlp#output-template) without downloading:
 ```
@@ -27,6 +34,8 @@ Note: if you download a static Canvas (JPEG) with `--write-thumbnail` set then t
 
 
 ## Related projects
+
+Thanks to [Canvas Downloader](https://www.canvasdownloader.com/) for help with figuring out what cookies need to be sent.
 
 [My Spotify Canvas](https://github.com/bartleyg/my-spotify-canvas)  
 [librespot-java](https://github.com/librespot-org/librespot-java)  
