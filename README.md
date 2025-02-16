@@ -15,10 +15,11 @@ See [installing yt-dlp plugins](https://github.com/yt-dlp/yt-dlp#installing-plug
 
 ## Usage
 
-**IMPORTANT**: Downloading will NOT work anymore unless you specify your `sp_dc` cookie. See [*How do I pass cookies to yt-dlp?*](https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp).  
-You can use a cookie file like this:
+**IMPORTANT**: Downloading will NOT work anymore unless you specify your `sp_dc` cookie. See [*How do I pass cookies to yt-dlp?*](https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp).
+You can either use `--cookies-from-browser` or `--cookies` with a cookie file like this:
 ```
-# For yt-dlp-SpotifyCanvas
+# Netscape HTTP Cookie File
+
 .spotify.com	TRUE	/	TRUE	2147483647	sp_dc	<your cookie value>
 ```
 
