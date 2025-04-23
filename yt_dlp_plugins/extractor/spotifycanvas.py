@@ -1,3 +1,6 @@
+import base64
+import pyotp
+
 from yt_dlp.extractor.spotify import SpotifyBaseIE
 from yt_dlp.utils import float_or_none, traverse_obj, unified_strdate
 
@@ -6,6 +9,17 @@ from yt_dlp_plugins.extractor.proto.canvas_pb2 import EntityCanvazRequest, Entit
 
 class SpotifyCanvasIE(SpotifyBaseIE):
     _VALID_URL = r'https?://open\.spotify\.com/(?:embed/)?track/(?P<id>\w+)'
+
+    def _real_initialize(self):
+        secretCipher = [12, 56, 76, 33, 88, 44, 88, 33, 78, 78, 11, 66, 22, 22, 55, 69, 54]
+        processed = b''.join(bytes(str(byte ^ (i % 33 + 9)), 'ascii') for (i, byte) in enumerate(secretCipher))
+        secretBase32 = base64.b32encode(processed)
+
+        totp = pyotp.TOTP(secretBase32)
+        server_time = self._download_json('https://open.spotify.com/server-time', None)['serverTime']
+        code = totp.at(server_time)
+        token_url = f'https://open.spotify.com/get_access_token?reason=transport&productType=web_player&totpVer=5&ts={server_time}&totp={code}'
+        self._ACCESS_TOKEN = self._download_json(token_url, None)['accessToken']
 
     def _real_extract(self, url):
         cookies = self._get_cookies('https://open.spotify.com')

@@ -15,12 +15,13 @@ See [installing yt-dlp plugins](https://github.com/yt-dlp/yt-dlp#installing-plug
 
 ## Usage
 
-**IMPORTANT**: Downloading will NOT work anymore unless you specify your `sp_dc` cookie. See [*How do I pass cookies to yt-dlp?*](https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp).
+**IMPORTANT**: Downloading will NOT work anymore unless you specify your `sp_dc` and `sp_key` cookies. See [*How do I pass cookies to yt-dlp?*](https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp).
 You can either use `--cookies-from-browser` or `--cookies` with a cookie file like this:
 ```
 # Netscape HTTP Cookie File
 
 .spotify.com	TRUE	/	TRUE	2147483647	sp_dc	<your cookie value>
+.spotify.com	TRUE	/	TRUE	2147483647	sp_key	<your cookie value>
 ```
 
 Download the Canvas for a song:
