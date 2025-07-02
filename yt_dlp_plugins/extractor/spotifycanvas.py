@@ -1,5 +1,7 @@
 import base64
+import math
 import pyotp
+import time
 
 from yt_dlp.extractor.spotify import SpotifyBaseIE
 from yt_dlp.utils import float_or_none, traverse_obj, unified_strdate
@@ -16,9 +18,11 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         secretBase32 = base64.b32encode(processed)
 
         totp = pyotp.TOTP(secretBase32)
-        server_time = self._download_json('https://open.spotify.com/server-time', None)['serverTime']
-        code = totp.at(server_time)
-        token_url = f'https://open.spotify.com/get_access_token?reason=transport&productType=web_player&totpVer=5&ts={server_time}&totp={code}'
+        local_time = int(time.time())
+        server_time = self._download_json('https://open.spotify.com/api/server-time', None)['serverTime']
+        code = totp.at(local_time)
+        server_code = totp.at(math.floor(server_time / 30))
+        token_url = f'https://open.spotify.com/api/token?reason=init&productType=mobile-web-player&totp={code}&totpVer=8&totpServer={server_code}'
         self._ACCESS_TOKEN = self._download_json(token_url, None)['accessToken']
 
     def _real_extract(self, url):
@@ -33,7 +37,7 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         canvas_request = EntityCanvazRequest()
         canvas_request.entities.add().entity_uri = f'spotify:track:{track_id}'
         canvas_response_bytes = self._request_webpage(
-            'https://api-partner.spotify.com/canvaz-cache/v0/canvases', track_id,
+            'https://spclient.wg.spotify.com/canvaz-cache/v0/canvases', track_id,
             headers={
                 'Content-Type': 'application/x-protobuf',
                 'Authorization': f'Bearer {self._ACCESS_TOKEN}',
