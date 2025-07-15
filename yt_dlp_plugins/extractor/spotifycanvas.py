@@ -13,7 +13,7 @@ class SpotifyCanvasIE(SpotifyBaseIE):
     _VALID_URL = r'https?://open\.spotify\.com/(?:embed/)?track/(?P<id>\w+)'
 
     def _real_initialize(self):
-        secretCipher = [12, 56, 76, 33, 88, 44, 88, 33, 78, 78, 11, 66, 22, 22, 55, 69, 54]
+        secretCipher = [62, 54, 109, 83, 107, 77, 41, 103, 45, 93, 114, 38, 41, 97, 64, 51, 95, 94, 95, 94]
         processed = b''.join(bytes(str(byte ^ (i % 33 + 9)), 'ascii') for (i, byte) in enumerate(secretCipher))
         secretBase32 = base64.b32encode(processed)
 
@@ -22,7 +22,7 @@ class SpotifyCanvasIE(SpotifyBaseIE):
         server_time = self._download_json('https://open.spotify.com/api/server-time', None)['serverTime']
         code = totp.at(local_time)
         server_code = totp.at(math.floor(server_time / 30))
-        token_url = f'https://open.spotify.com/api/token?reason=init&productType=mobile-web-player&totp={code}&totpVer=8&totpServer={server_code}'
+        token_url = f'https://open.spotify.com/api/token?reason=init&productType=mobile-web-player&totp={code}&totpVer=14&totpServer={server_code}'
         self._ACCESS_TOKEN = self._download_json(token_url, None)['accessToken']
 
     def _real_extract(self, url):
