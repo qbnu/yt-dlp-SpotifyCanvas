@@ -3,13 +3,13 @@ import math
 import pyotp
 import time
 
-from yt_dlp.extractor.spotify import SpotifyBaseIE
+from yt_dlp.extractor.common import InfoExtractor
 from yt_dlp.utils import float_or_none, traverse_obj, unified_strdate
 
 from yt_dlp_plugins.extractor.proto.canvas_pb2 import EntityCanvazRequest, EntityCanvazResponse
 
 
-class SpotifyCanvasIE(SpotifyBaseIE):
+class SpotifyCanvasIE(InfoExtractor):
     _VALID_URL = r'https?://open\.spotify\.com/(?:embed/)?track/(?P<id>\w+)'
 
     def _real_initialize(self):
