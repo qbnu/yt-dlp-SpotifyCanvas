@@ -14,7 +14,7 @@ class SpotifyCanvasIE(InfoExtractor):
 
     def _real_initialize(self):
         secretDict = self._download_json(
-            'https://raw.githubusercontent.com/Thereallo1026/spotify-secrets/refs/heads/main/secrets/secretDict.json',
+            'https://raw.githubusercontent.com/xyloflake/spot-secrets-go/refs/heads/main/secrets/secretDict.json',
             None,
         )
         totpVer = max(secretDict)
