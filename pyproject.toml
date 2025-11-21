@@ -8,8 +8,8 @@ universal = true
 [project]
 name = "yt-dlp-SpotifyCanvas"
 description = "A yt-dlp extractor plugin for downloading Spotify Canvas videos"
-version = "2025.10.21"
-requires-python = ">=3.8"
+version = "2025.11.21"
+requires-python = ">=3.10"
 readme = "README.md"
 license = {file = "LICENSE"}
 dependencies = [
