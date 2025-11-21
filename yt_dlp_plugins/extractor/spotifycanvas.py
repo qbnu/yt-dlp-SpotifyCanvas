@@ -4,9 +4,9 @@ import pyotp
 import time
 
 from yt_dlp.extractor.common import InfoExtractor
-from yt_dlp.utils import float_or_none, traverse_obj, unified_strdate
+from yt_dlp.utils import determine_ext, float_or_none, traverse_obj, unified_strdate
 
-from yt_dlp_plugins.extractor.proto.canvas_pb2 import EntityCanvazRequest, EntityCanvazResponse
+from yt_dlp_plugins.extractor.proto.canvas_pb2 import EntityCanvazRequest, EntityCanvazResponse, Type
 
 
 class SpotifyCanvasIE(InfoExtractor):
@@ -58,7 +58,13 @@ class SpotifyCanvasIE(InfoExtractor):
         thumbnails = []
         for canvas in canvas_response.canvases:
             if canvas.url:
-                formats.append({'url': canvas.url})
+                ext = None
+                if canvas.type == Type.IMAGE:
+                    ext = determine_ext(canvas.url, 'jpg')
+                formats.append({
+                    'url': canvas.url,
+                    'ext': ext,
+                })
             for thumbnail in canvas.thumbnails:
                 thumbnails.append({
                     'width': thumbnail.width,
